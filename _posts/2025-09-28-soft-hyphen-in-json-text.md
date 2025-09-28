@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Soft-hypen characters in json text values"
-date: 2025-09-28 21:00::00 +0200
 author: Arild Eide
 tags: Nibe uplink json
 ---
