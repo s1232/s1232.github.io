@@ -19,7 +19,11 @@ For years I have a had script running to fetch various useful and less useful pa
 ## Authenticating
 The API allows authentication using client credentials flow, so a single call to the *token* endpoint is all it takes to obtain an access token. In Nushell, setting to request headers, *Authorization* and *Content-Type*:
 ```
-  let token = (http post --headers {Authorization:$'Basic ($'($client_id):($client_secret)' | encode base64 | str trim)' Content-Type: application/x-www-form-urlencoded}  https://api.myuplink.com/oauth/token 'grant_type=client_credentials&scope=READSYSTEM' | get 'access_token')
+let token = (http post --headers
+  {Authorization:$'Basic ($'($client_id):($client_secret)' | encode base64 | str trim)'
+  Content-Type: application/x-www-form-urlencoded}
+  https://api.myuplink.com/oauth/token
+  'grant_type=client_credentials&scope=READSYSTEM' | get 'access_token')
 ```
 
 The access token is now assigned to `$token` and can be used to interact with the API for an hour, first we obtain the device id:
@@ -27,7 +31,10 @@ The access token is now assigned to `$token` and can be used to interact with th
 
 ## Fetching data
 ```
-let device_id = (http get -r --headers {Authorization: $'Bearer ($token)'} https://api.myuplink.com/v2/systems/me |  get systems.devices.0.id.0)
+let device_id =
+  (http get -r --headers {Authorization: $'Bearer ($token)'}
+  https://api.myuplink.com/v2/systems/me
+  |  get systems.devices.0.id.0)
 
 // Actual API resonse
 {
@@ -61,7 +68,8 @@ let device_id = (http get -r --headers {Authorization: $'Bearer ($token)'} https
 The first useful piece of information we will get is a parameter called *priority* which conveys if and for what purpose the heat pump is running for right now, this is parameter *49994*:
 
 ```
-  http get --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplink.com/v2/devices/($device_id)/points?parameters=49994'
+http get --headers {Authorization: $'Bearer ($token)'}
+  $'https://api.myuplink.com/v2/devices/($device_id)/points?parameters=49994'
 ```
 
 This is were we hit the problem, in the screenshot below - what is going on with *Priority*?
@@ -73,7 +81,7 @@ Further progress fully stopped - we need to understand why there is a garbled ch
 
 - The API itself? Possibly, but the issue is not present when running the same request using *curl* in *iterm2* which suggest a local issue
 - Alacritty - the terminal?
-- Zellij - the terminal multiplexer
+- Zellij - the terminal multiplexer?
 - Nushell or its `http get` command?
 
 ChatGPT suggested a font encoding issue and that we should select a different system font for Alacritty. No difference.
@@ -85,18 +93,19 @@ The next step was to eliminate both Zellij and Nushell. The issue was present ev
 ChatGPT suggested that we pipe the API response to `od` to see any non-visible characters:
 ```
 http get -r  --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplink.com/v2/
-devices/($device_id)/points?parameters=49994' | od -c
+  devices/($device_id)/points?parameters=49994' | od -c
 ```
 This is the output:
 ![Screenshot od](/images/nibe_response_od.png)
 In the red ellipsis we see a two-byte code point right before the last *i* in *priority*, *302 255*. This code point is the soft-hypen or SHY or discretionary hyphen that is used to signal where in a word a hyphen should be placed when rendering would benefit from breaking the word into lines.
 
-For reasons I have not looked into, Alacritty renders the double dagger substitution character when it encounters the SHY character. At least on my two systems. It is also hard no see how the presence of SHY in a short json value would be useful.
+For reasons I have not looked into, Alacritty renders the double dagger substitution character when it encounters the SHY character, at least on my two systems. It is also hard to see how any usage of the SHY in json text value would be useful. 
 
 ## Removing the SHY
 ```
-http get -r  --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplink.com/v2/
-devices/($device_id)/points?parameters=49994' | str replace "\u{AD}" "" | from json
+http get -r  --headers {Authorization: $'Bearer ($token)'}
+  $'https://api.myuplink.com/v2/devices/($device_id)/points?parameters=49994'
+  | str replace "\u{AD}" "" | from json
 ```
 Replacing the SHY with the empty string fixes the rendering issue:
 ![Screenshot shy removed](/images/nibe_shy_removed.png)
