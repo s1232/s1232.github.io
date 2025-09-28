@@ -9,7 +9,7 @@ title:  "Soft-hypen characters in json text values"
 In 2019 we installed a Nibe F1155 Ground Source Heat pump. In essence, this is an expensive cabinet in our basement that circulates glycol into a 200 meter deep energy well to extract geothermal heat to substantially reduce the monthly electricity bill. BTW, if the [state-funded fixed price scheme](https://www.regjeringen.no/en/aktuelt/norgespris-skal-sikre-forutsigbare-og-stabile-strompriser-for-folk/id3090849/) was even heard of at the time we would certainly not have been able to justify the investment. In any case, this is the cabinet:
 
 
-![Heat_pump_photo](f1155.jpg)
+![Heat_pump_photo](/images/f1155.jpg)
 
 
 For years I have a had script running to fetch various useful and less useful parameters from Nibe's API, but this broke down when they decided to redo their service entirely. This morning I set out to restore the every-minute read of paramaters and this post is describe a small but interesting detour hit when doing so.
@@ -64,7 +64,7 @@ The first useful piece of information we will get is a parameter called *priorit
 ```
 
 This is were we hit the problem, in the screenshot below - what is going on with *Priority*?
-![Screenshot character issue](nibe_priority.pngl)
+![Screenshot character issue](/images/nibe_priority.png)
 
 Further progress fully stopped - we need to understand why there is a garbled character in the output.
 
@@ -87,7 +87,7 @@ http get -r  --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplin
 devices/($device_id)/points?parameters=49994' | od -c
 ```
 This is the output:
-![Screenshot od](nibe_response_od.png)
+![Screenshot od](/images/nibe_response_od.png)
 In the red ellipsis we see a two-byte code point right before the last *i* in *priority*, *302 255*. This code point is the soft-hypen or SHY or discretionary hyphen that is used to signal where in a word a hyphen should be placed when rendering would benefit from breaking the word into lines.
 
 For reasons I have not looked into, Alacritty renders the double dagger substitution character when it encounters the SHY character. At least on my two systems. It is also hard no see how the presence of SHY in a short json value would be useful.
@@ -98,4 +98,4 @@ http get -r  --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplin
 devices/($device_id)/points?parameters=49994' | str replace "\u{AD}" "" | from json
 ```
 Replacing the SHY with the empty string fixes the rendering issue:
-![Screenshot shy removed](nibe_shy_removed.png)
+![Screenshot shy removed](/images/nibe_shy_removed.png)
