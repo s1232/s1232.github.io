@@ -2,7 +2,7 @@
 layout: post
 title:  "Soft-hypen characters in json text values"
 author: Arild Eide
-tags: Nibe uplink json
+tags: Nibe uplink json Alacritty 
 ---
 
 
@@ -89,7 +89,7 @@ ChatGPT claims it is a font encoding issue and that we should select a different
 
 The next step is to eliminate both Zellij and Nushell and we fined issue present even when doing a regular curl request in Alacritty using zsh and without Zellij, under both MacOS and Ubuntu.
 
-## Looking closer on the API response body
+## A closer look on the response body
 
 ChatGPT suggests that we pipe the API response to `od` to see any non-visible characters:
 ```
@@ -110,3 +110,6 @@ http get -r  --headers {Authorization: $'Bearer ($token)'}
 ```
 Replacing the SHY with the empty string fixes the rendering issue:
 ![Screenshot shy removed](/images/nibe_shy_removed.png)
+
+## Next steps
+With this issue solved we can progress what we really want to build a Tauri-based Android app to monitor the heat pump, in much greater detail than then [[official app](https://play.google.com/store/apps/details?id=com.myuplink.consumer). 
