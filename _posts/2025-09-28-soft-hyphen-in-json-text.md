@@ -13,7 +13,7 @@ In 2019 we installed a Nibe F1155 Ground Source Heat pump. In essence, this is a
 ![Heat_pump_photo](/images/f1155.jpg)
 
 
-For years I have a had script running to fetch various useful and less useful parameters from Nibe's API, but this broke down when they decided to redo their service entirely. This morning I set out to restore the every-minute read of paramaters and this post is describe a small but interesting detour hit when doing so.
+For years I have a had script running to fetch various useful and less useful parameters from Nibe's API, but this broke down when they decided to redo their service entirely. This morning I set out to restore the every-minute read of paramaters and this post presents a small but interesting detour hit when doing so.
 
 
 ## Authenticating
@@ -26,7 +26,8 @@ let token = (http post --headers
   'grant_type=client_credentials&scope=READSYSTEM' | get 'access_token')
 ```
 
-The access token is now assigned to `$token` and can be used to interact with the API for an hour, first we obtain the device id:
+The access token is now assigned to `$token` and can be used to interact with the API for an hour.
+First we obtain the device id:
 
 
 ## Fetching data
@@ -65,7 +66,7 @@ let device_id =
 }
 ```
 
-The first useful piece of information we will get is a parameter called *priority* which conveys if and for what purpose the heat pump is running for right now, this is parameter *49994*:
+Let's fetch the parameter *priority* which conveys if and for what purpose the heat pump is running right now, this is parameter *49994*:
 
 ```
 http get --headers {Authorization: $'Bearer ($token)'}
@@ -75,28 +76,28 @@ http get --headers {Authorization: $'Bearer ($token)'}
 This is were we hit the problem, in the screenshot below - what is going on with *Priority*?
 ![Screenshot character issue](/images/nibe_priority.png)
 
-Further progress fully stopped - we need to understand why there is a garbled character in the output.
+Further progress fully stopped - we need to understand why there is a garbled character in the output!
 
-## Moving parts - what component is responsible for character encoding issue?
+## What can possible introduce the character encoding issue?
 
-- The API itself? Possibly, but the issue is not present when running the same request using *curl* in *iterm2* which suggest a local issue
+- The API itself? Possibly, but the issue is not present when running the same request using *curl* in *iterm2* which suggests a local issue
 - Alacritty - the terminal?
 - Zellij - the terminal multiplexer?
 - Nushell or its `http get` command?
 
-ChatGPT suggested a font encoding issue and that we should select a different system font for Alacritty. No difference.
+ChatGPT claims it is a font encoding issue and that we should select a different system font for Alacritty. No difference.
 
-The next step was to eliminate both Zellij and Nushell. The issue was present even when doing a regular curl request in Alacritty and it is present under both MacOS and Ubuntu.
+The next step is to eliminate both Zellij and Nushell and we fined issue present even when doing a regular curl request in Alacritty using zsh and without Zellij, under both MacOS and Ubuntu.
 
 ## Looking closer on the API response body
 
-ChatGPT suggested that we pipe the API response to `od` to see any non-visible characters:
+ChatGPT suggests that we pipe the API response to `od` to see any non-visible characters:
 ```
 http get -r  --headers {Authorization: $'Bearer ($token)'} $'https://api.myuplink.com/v2/
   devices/($device_id)/points?parameters=49994' | od -c
 ```
 This is the output:
-![Screenshot od](/images/nibe_response_od.png)
+![Scre, nibe_response_od.png)
 In the red ellipsis we see a two-byte code point right before the last *i* in *priority*, *302 255*. This code point is the soft-hypen or SHY or discretionary hyphen that is used to signal where in a word a hyphen should be placed when rendering would benefit from breaking the word into lines.
 
 For reasons I have not looked into, Alacritty renders the double dagger substitution character when it encounters the SHY character, at least on my two systems. It is also hard to see how any usage of the SHY in json text value would be useful. 
