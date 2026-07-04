@@ -2,10 +2,11 @@
 layout: post
 title:  "Learning roadmap"
 author: Arild Eide
-tags: Nibe uplink json Alacritty 
+tags: Learning Roadmap Rust Engineering
 ---
 
 # Vacation time
+![Vacation Home](/images/peroj_jul4.jpg)
 ## Getting up early
 It is July 4th, the second day of our trip to Peroj, Croatia. We have rented a nice house together with some friends. This morning I got 05:30AM after going to bed early. It is mentally and physically impossible to sleep more than 7-7.5 hours and getting up earlier than everone else offers some quite time to think and reflect.
 
