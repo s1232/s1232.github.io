@@ -112,4 +112,4 @@ Replacing the SHY with the empty string fixes the rendering issue:
 ![Screenshot shy removed](/images/nibe_shy_removed.png)
 
 ## Next steps
-With this issue solved we can progress what we really want to build a Tauri-based Android app to monitor the heat pump, in much greater detail than then [[official app](https://play.google.com/store/apps/details?id=com.myuplink.consumer). 
+With this issue solved we can progress what we really want to build a Tauri-based Android app to monitor the heat pump, in much greater detail than then [official app](https://play.google.com/store/apps/details?id=com.myuplink.consumer). 
