@@ -6,7 +6,7 @@ tags: Nibe uplink json Alacritty
 ---
 
 
-## The backdrop
+## Backdrop
 In 2019 we installed a Nibe F1155 Ground Source Heat pump. In essence, this is an expensive cabinet in our basement that circulates glycol into a 200 meter deep energy well to extract geothermal heat to substantially reduce the monthly electricity bill. BTW, if the [state-funded fixed price scheme](https://www.regjeringen.no/en/aktuelt/norgespris-skal-sikre-forutsigbare-og-stabile-strompriser-for-folk/id3090849/) was even heard of at the time we would certainly not have been able to justify the investment. In any case, this is the cabinet:
 
 
