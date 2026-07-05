@@ -28,5 +28,5 @@ It turns out the JDK ecosystem is currently in at a very critical point in time.
 Apache arrow is said to support both **random access and scan-based workloads**. Why is that the case and how can it be demonstrated?
 
 Explore the practical relation between Parquet and Arrow. Would reading a parquet file from disk using the [Parquet crate](https://crates.io/crates/parquet) create an Arrow representation in memory?
-
+a
 
