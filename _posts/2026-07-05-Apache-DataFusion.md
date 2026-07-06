@@ -34,7 +34,8 @@ There is a definition in [Schema.fbs](https://github.com/apache/arrow/blob/main/
 table Int {
   bitWidth: int; // restricted to 8, 16, 32, and 64 in v1
   is_signed: bool;
-}```
+}
+```
 
 ## Apache Arrow: Java - Rust interoperability
 The zero-copy interop to and from Java is based Java's ability to make use of off-heap memory! This is clearly worth a detour of its own. Efficient use of heap memory and GC is a core part of Java's value proposition.
