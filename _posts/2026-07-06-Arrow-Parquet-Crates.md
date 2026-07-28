@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Apache DataFusion"
+title:  "The Arrow crate"
 author: Arild Eide
 tags: Arrow Parquet Rust
 ---
